@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Flask Image Example</title>
+    </head>
+    <body>
+        <h1>Image Example</h1>
+        <img src="data:image/jpeg;base64,{{ image_data }}" alt="Image">
+        <p>
+            어깨 와 골반의 차이: {{shoulder_hip_diff}}, 어깨 등급 : {{shoulder_result}}<br>
+            얼굴 크기, w :{{face_w}} , h :{{face_h}}<br>
+            몸길이 : {{body_length}} {{body_ratio}}등신 입니다
+            {{ body_info }}</p>
+    </body>
+</html>

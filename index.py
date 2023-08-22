@@ -97,16 +97,19 @@ def body_ratio_survey():
         shoulder_hip_diff, shoulder_result = functions.get_shoulder_len(shoulder_length,hip_length)
 
         # img check
-        lib_import.cv2.imshow("original img",original_img)
+        # lib_import.cv2.imshow("original img",original_img)
         
         face_detecting_img, (face_w,face_h) = functions.get_face_size(mtcnn_img)
 
         body_ratio = round(body_length/face_h,2)
 
+        # img base64 encoding
+        _, buffer = lib_import.cv2.imencode('.jpg', face_detecting_img)
+        encoded_image = lib_import.base64.b64encode(buffer).decode('utf-8')
+
         # debuging img
-        lib_import.cv2.imshow("face detecting img", face_detecting_img)
-        lib_import.cv2.waitKey(0)
-        
+        # lib_import.cv2.imshow("face detecting img", face_detecting_img)
+        # lib_import.cv2.waitKey(0)
 
     pose.close()
 
@@ -124,7 +127,8 @@ def body_ratio_survey():
     print(f"몸길이 {body_length} {body_ratio}등신 입니다")
 
     result = lib_import.jsonify(body_info)
-    return result
+    
+    return lib_import.render_template('result.html',image_data=encoded_image,shoulder_hip_diff=shoulder_hip_diff,shoulder_result=shoulder_result,face_w=face_w,face_h=face_h,body_length=body_length,body_ratio=body_ratio)
     
 def main():
     app.debug = True
