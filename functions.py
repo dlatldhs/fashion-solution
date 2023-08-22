@@ -4,21 +4,21 @@ def get_shoulder_len( shoulder, hip ):
     
     sh_diff = shoulder - hip
     
-    if sh_diff < 0 :
+    if sh_diff < 5 :
         return -1
     
     else :
         if sh_diff > 0 and sh_diff < 41:
-            result = 1
+            result = 4
             print('bad')
         elif sh_diff > 40 and sh_diff < 61:
-            result = 2
+            result = 3
             print('normal')
         elif sh_diff > 60 and sh_diff < 81:
-            result = 3
+            result = 2
             print('good')
         else:
-            result = 4
+            result = 1
             print('very good')
     
     print(sh_diff)
