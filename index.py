@@ -11,8 +11,17 @@ lib_import.CORS(
         supports_credentials=True
     )
 
-@app.route("/body_ratio")
+@app.route('/')
+def main_page():
+    return lib_import.render_template('index.html')
+
+@app.route("/body_ratio", methods=['POST'] )
 def body_ratio_survey():
+
+    file = lib_import.request.files['file']
+    filestr = file.read()
+    npimg = lib_import.np.fromstring(filestr, lib_import.np.uint8)
+    img = lib_import.cv2.imdecode(npimg, lib_import.cv2.IMREAD_COLOR)
 
     # mediapipe_define
     mp_drawing = lib_import.mp.solutions.drawing_utils
@@ -27,8 +36,8 @@ def body_ratio_survey():
     )
 
     # img read
-    img_path = './images.jpg'
-    img = lib_import.cv2.imread(img_path)
+    # img_path = './images.jpg'
+    # img = lib_import.cv2.imread(img_path)
 
     # img variable
     img_h, img_w, _ = img.shape
@@ -116,7 +125,7 @@ def body_ratio_survey():
 
     result = lib_import.jsonify(body_info)
     return result
-
+    
 def main():
     app.debug = True
     app.run(host="localhost", port="8080")

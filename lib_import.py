@@ -13,6 +13,7 @@ import mediapipe as mp
 import numpy as np
 import matplotlib.image as img
 import matplotlib.pyplot as pp
+import os
 from flask import Flask, render_template, jsonify
 from flask import request
 from flask_cors import CORS 
