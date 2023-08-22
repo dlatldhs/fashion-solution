@@ -63,9 +63,21 @@ if pose_locate.pose_landmarks:
     #  shoulder compare hip
     shoulder_hip_diff, shoulder_result = functions.get_shoulder_len(shoulder_length,hip_length)
 
+    # img check
     lib_import.cv2.imshow("original img",original_img)
+    
+    face_detecting_img, (face_w,face_h) = functions.get_face_size(mtcnn_img)
+
+    lib_import.cv2.imshow("face detecting img", face_detecting_img)
+
     lib_import.cv2.waitKey(0)
 
 pose.close()
 
-print(shoulder_hip_diff, shoulder_result)
+print(f"어깨 힙 차이: {shoulder_hip_diff}, 어깨 등급 : {shoulder_result}")
+print(f"얼굴 크기, w :{face_w} , h :{face_h}")
+
+# todolist
+'''
+발이랑 숄더까지 좌표 해가주고 길이 구해서 몇등신인지 구하기
+'''
