@@ -1,95 +1,125 @@
 import lib_import
 import functions
 
-# mediapipe_define
-mp_drawing = lib_import.mp.solutions.drawing_utils
-mp_drawing_styles = lib_import.mp.solutions.drawing_styles
-mp_pose = lib_import.mp.solutions.pose
+# flask app
+app = lib_import.Flask(__name__)
 
-# mediapipe pose model load
-pose = mp_pose.Pose(
-    min_detection_confidence=0.5, # 기본값
-    min_tracking_confidence=0.5,  # 기본값
-    model_complexity=2  # 모델 복잡도 -> 정확도 증가
-)
+# cors
+lib_import.CORS(
+        app,
+        resources={r"/api/*": {"origins":"*"}},
+        supports_credentials=True
+    )
 
-# img read
-img_path = './images.jpg'
-img = lib_import.cv2.imread(img_path)
+@app.route("/body_ratio")
+def body_ratio_survey():
 
-# img variable
-img_h, img_w, _ = img.shape
-original_img = img.copy()
-mtcnn_img = img.copy()
-# drawing variable
-color = (0,255,0) # green
-thickness = 2
-radius = 5
+    # mediapipe_define
+    mp_drawing = lib_import.mp.solutions.drawing_utils
+    mp_drawing_styles = lib_import.mp.solutions.drawing_styles
+    mp_pose = lib_import.mp.solutions.pose
 
-# img brg -> rgb transform
-img = lib_import.cv2.cvtColor(img,lib_import.cv2.COLOR_BGR2RGB)
+    # mediapipe pose model load
+    pose = mp_pose.Pose(
+        min_detection_confidence=0.5, # 기본값
+        min_tracking_confidence=0.5,  # 기본값
+        model_complexity=2  # 모델 복잡도 -> 정확도 증가
+    )
 
-# pose
-pose_locate = pose.process(img)
+    # img read
+    img_path = './images.jpg'
+    img = lib_import.cv2.imread(img_path)
 
-# 관절 위치 그리기
-mp_drawing.draw_landmarks(
-    original_img,
-    pose_locate.pose_landmarks,
-    mp_pose.POSE_CONNECTIONS,
-    landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style()
-)
-
-# LandMark drawing
-if pose_locate.pose_landmarks:
-
-    # landmark list 
-    landmark_list = pose_locate.pose_landmarks.landmark
-
-    # find shoulder locate
-    left_shoulder_x = landmark_list[mp_pose.PoseLandmark.LEFT_SHOULDER].x * img_w
-    right_shoulder_x = landmark_list[mp_pose.PoseLandmark.RIGHT_SHOULDER].x * img_w
+    # img variable
+    img_h, img_w, _ = img.shape
+    original_img = img.copy()
+    mtcnn_img = img.copy()
     
-    left_shoulder_y = landmark_list[mp_pose.PoseLandmark.LEFT_SHOULDER].y * img_h
-    right_shoulder_y = landmark_list[mp_pose.PoseLandmark.RIGHT_SHOULDER].y * img_h
+    # img brg -> rgb transform
+    img = lib_import.cv2.cvtColor(img,lib_import.cv2.COLOR_BGR2RGB)
 
-    sum_shoulder = (left_shoulder_y + right_shoulder_y)/2
+    # pose
+    pose_locate = pose.process(img)
 
-    # get shoulder locate
-    shoulder_length = left_shoulder_x - right_shoulder_x
+    # 관절 위치 그리기
+    mp_drawing.draw_landmarks(
+        original_img,
+        pose_locate.pose_landmarks,
+        mp_pose.POSE_CONNECTIONS,
+        landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style()
+    )
 
-    # find hip locate
-    l_hip_x = landmark_list[mp_pose.PoseLandmark.LEFT_HIP].x * img_w
-    r_hip_x = landmark_list[mp_pose.PoseLandmark.RIGHT_HIP].x * img_w
+    # LandMark drawing
+    if pose_locate.pose_landmarks:
 
-    # find foot locate
-    
-    l_foot_y = landmark_list[mp_pose.PoseLandmark.LEFT_FOOT_INDEX].y * img_h
-    r_foot_y = landmark_list[mp_pose.PoseLandmark.RIGHT_FOOT_INDEX].y * img_h
+        # landmark list 
+        landmark_list = pose_locate.pose_landmarks.landmark
 
-    sum_foot = (l_foot_y+r_foot_y)/2
-    
-    # all body length = foot_sum_locate_y + sholder_sum_locate_y
-    body_length = sum_foot-sum_shoulder
+        # find shoulder locate
+        left_shoulder_x = landmark_list[mp_pose.PoseLandmark.LEFT_SHOULDER].x * img_w
+        right_shoulder_x = landmark_list[mp_pose.PoseLandmark.RIGHT_SHOULDER].x * img_w
+        
+        left_shoulder_y = landmark_list[mp_pose.PoseLandmark.LEFT_SHOULDER].y * img_h
+        right_shoulder_y = landmark_list[mp_pose.PoseLandmark.RIGHT_SHOULDER].y * img_h
 
-    # get hip locate
-    hip_length = l_hip_x - r_hip_x
+        sum_shoulder = (left_shoulder_y + right_shoulder_y)/2
 
-    #  shoulder compare hip
-    shoulder_hip_diff, shoulder_result = functions.get_shoulder_len(shoulder_length,hip_length)
+        # get shoulder locate
+        shoulder_length = left_shoulder_x - right_shoulder_x
 
-    # img check
-    lib_import.cv2.imshow("original img",original_img)
-    
-    face_detecting_img, (face_w,face_h) = functions.get_face_size(mtcnn_img)
+        # find hip locate
+        l_hip_x = landmark_list[mp_pose.PoseLandmark.LEFT_HIP].x * img_w
+        r_hip_x = landmark_list[mp_pose.PoseLandmark.RIGHT_HIP].x * img_w
 
-    lib_import.cv2.imshow("face detecting img", face_detecting_img)
+        # find foot locate
+        
+        l_foot_y = landmark_list[mp_pose.PoseLandmark.LEFT_FOOT_INDEX].y * img_h
+        r_foot_y = landmark_list[mp_pose.PoseLandmark.RIGHT_FOOT_INDEX].y * img_h
 
-    lib_import.cv2.waitKey(0)
+        sum_foot = (l_foot_y+r_foot_y)/2
+        
+        # all body length = foot_sum_locate_y + sholder_sum_locate_y
+        body_length = sum_foot-sum_shoulder
 
-pose.close()
+        # get hip locate
+        hip_length = l_hip_x - r_hip_x
 
-print(f"어깨 힙 차이: {shoulder_hip_diff}, 어깨 등급 : {shoulder_result}")
-print(f"얼굴 크기, w :{face_w} , h :{face_h}")
-body_ratio = round(body_length/face_h,2)
-print(f"몸길이 {body_length} {body_ratio}등신 입니다")
+        #  shoulder compare hip
+        shoulder_hip_diff, shoulder_result = functions.get_shoulder_len(shoulder_length,hip_length)
+
+        # img check
+        lib_import.cv2.imshow("original img",original_img)
+        
+        face_detecting_img, (face_w,face_h) = functions.get_face_size(mtcnn_img)
+
+        body_ratio = round(body_length/face_h,2)
+
+        # debuging img
+        lib_import.cv2.imshow("face detecting img", face_detecting_img)
+        lib_import.cv2.waitKey(0)
+        
+
+    pose.close()
+
+    body_info = {
+        "shoulder_rate" : shoulder_result,
+        "shoulder_hip_diff" : shoulder_hip_diff,
+        "face_width" : face_w,
+        "face_height": face_h,
+        "body_length": body_length,
+        "body_ratio" : body_ratio, 
+    }
+
+    print(f"어깨 힙 차이: {shoulder_hip_diff}, 어깨 등급 : {shoulder_result}")
+    print(f"얼굴 크기, w :{face_w} , h :{face_h}")
+    print(f"몸길이 {body_length} {body_ratio}등신 입니다")
+
+    result = lib_import.jsonify(body_info)
+    return result
+
+def main():
+    app.debug = True
+    app.run(host="localhost", port="8080")
+
+if __name__ == "__main__":
+    main()
