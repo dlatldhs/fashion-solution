@@ -1,26 +1,61 @@
-from flask import Flask
-import pose_media
-import matplotlib.image as img
-import matplotlib.pyplot as pp
+import lib_import
 
-import numpy as np
-from google.colab.patches import cv2_imshow
-app = Flask(__name__)
+# mediapipe_define
+mp_drawing = lib_import.mp.solutions.drawing_utils
+mp_drawing_styles = lib_import.mp.solutions.drawing_styles
+mp_pose = lib_import.mp.solutions.pose
 
-@app.route('/')
-def hello():
-    return 'Hello, My First Flask!'
+# mediapipe pose model load
+pose = mp_pose.Pose(
+    min_detection_confidence=0.5, # 기본값
+    min_tracking_confidence=0.5,  # 기본값
+    model_complexity=2  # 모델 복잡도 -> 정확도 증가
+)
 
-@app.route('/analysis')
-def user_body_analysis():
+# img read
+img_path = './images.jpg'
+img = lib_import.cv2.imread(img_path)
 
-    # TODO use cam and take a picture
+# img variable
+img_h, img_w, _ = img.shape
+original_img = img.copy()
+# drawing variable
+color = (0,255,0) # green
+thickness = 2
+radius = 5
 
+# img brg -> rgb transform
+img = lib_import.cv2.cvtColor(img,lib_import.cv2.COLOR_BGR2RGB)
 
-    # TODO throw picture
-    img_result, result = pose_media.get_prediction(img)
-    pp.imshow(img_result)
-    pp.show()
+# pose
+pose_locate = pose.process(img)
 
-    print(f"result: 'upper':{result[0]},'bottom':{result[1]}")
-    # return jsonify({'upper': result[0]},{'bottom':result[1]})
+# 관절 위치 그리기
+mp_drawing.draw_landmarks(
+    original_img,
+    pose_locate.pose_landmarks,
+    mp_pose.POSE_CONNECTIONS,
+    landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style()
+)
+
+# LandMark drawing
+if pose_locate.pose_landmarks:
+
+    # find shoulder locate
+    left_shoulder_x = lib_import.landmark_pb2.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER].x * img_w
+    right_shoulder_x = lib_import.landmark_pb2.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER].x * img_w
+
+    # get shoulder locate
+    shoulder_length = left_shoulder_x - right_shoulder_x
+
+    # find hip locate
+    l_hip_x = lib_import.landmark_pb2.landmark[mp_pose.PoseLandmark.LEFT_HIP].x * img_w
+    r_hip_x = lib_import.landmark_pb2.landmark[mp_pose.PoseLandmark.RIGHT_HIP].x * img_w
+
+    # get hip locate
+    hip_length = l_hip_x - r_hip_x
+
+    #  shoulder compare hip
+    shoulder_result = get_shoulder_len(shoulder_length,hip_length)
+
+pose.close()
