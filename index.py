@@ -1,4 +1,5 @@
 import lib_import
+import functions
 
 # mediapipe_define
 mp_drawing = lib_import.mp.solutions.drawing_utils
@@ -19,6 +20,7 @@ img = lib_import.cv2.imread(img_path)
 # img variable
 img_h, img_w, _ = img.shape
 original_img = img.copy()
+mtcnn_img = img.copy()
 # drawing variable
 color = (0,255,0) # green
 thickness = 2
@@ -41,21 +43,29 @@ mp_drawing.draw_landmarks(
 # LandMark drawing
 if pose_locate.pose_landmarks:
 
+    # landmark list 
+    landmark_list = pose_locate.pose_landmarks.landmark
+
     # find shoulder locate
-    left_shoulder_x = lib_import.landmark_pb2.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER].x * img_w
-    right_shoulder_x = lib_import.landmark_pb2.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER].x * img_w
+    left_shoulder_x = landmark_list[mp_pose.PoseLandmark.LEFT_SHOULDER].x * img_w
+    right_shoulder_x = landmark_list[mp_pose.PoseLandmark.RIGHT_SHOULDER].x * img_w
 
     # get shoulder locate
     shoulder_length = left_shoulder_x - right_shoulder_x
 
     # find hip locate
-    l_hip_x = lib_import.landmark_pb2.landmark[mp_pose.PoseLandmark.LEFT_HIP].x * img_w
-    r_hip_x = lib_import.landmark_pb2.landmark[mp_pose.PoseLandmark.RIGHT_HIP].x * img_w
+    l_hip_x = landmark_list[mp_pose.PoseLandmark.LEFT_HIP].x * img_w
+    r_hip_x = landmark_list[mp_pose.PoseLandmark.RIGHT_HIP].x * img_w
 
     # get hip locate
     hip_length = l_hip_x - r_hip_x
 
     #  shoulder compare hip
-    shoulder_result = get_shoulder_len(shoulder_length,hip_length)
+    shoulder_hip_diff, shoulder_result = functions.get_shoulder_len(shoulder_length,hip_length)
+
+    lib_import.cv2.imshow("original img",original_img)
+    lib_import.cv2.waitKey(0)
 
 pose.close()
+
+print(shoulder_hip_diff, shoulder_result)
