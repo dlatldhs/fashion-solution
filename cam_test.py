@@ -1,6 +1,6 @@
 import cv2
 
-cam = cv2.VideoCapture(1)
+cam = cv2.VideoCapture(cv2.CAP_DSHOW+1)
 
 cv2.namedWindow("test")
 

@@ -1,11 +1,29 @@
-<!-- capture.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Webcam Capture</title>
+    <link rel="stylesheet" type="text/css" href="../static/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <!-- jQuery 추가 -->
 </head>
 <body>
-    <img src="data:image/jpg;base64, {{ img }}" />
+    <form action="/body_ratio2" method="POST" enctype="multipart/form-data">
+        <img id="capturedImage" src="data:image/jpg;base64, {{ img }}" />
+        <p id="btnRetry">다시 찍기</p>
+        <input type="submit" value="이걸로 하기로" id="btnConfirm">
+    </form>
+
+<script type='text/javascript'>
+
+$(document).ready(function() {
+
+  $('#btnRetry').click(function() {
+      location.reload(); 
+      // 페이지 새로고침으로 다시 찍기 기능 구현 (필요한 경우 다른 방식으로 구현 가능)
+  });
+});
+
+</script>
+
 </body>
 </html>
