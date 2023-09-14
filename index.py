@@ -56,9 +56,19 @@ def body_ratio_survey2():
     np_data = lib_import.np.frombuffer(decoded_data, lib_import.np.uint8)
     
     image = lib_import.cv2.imdecode(np_data, lib_import.cv2.IMREAD_ANYCOLOR)
-    image , result_list = functions.ratio_solution(image)
+    image, points_image ,result_list = functions.ratio_solution(image)
 
-    return lib_import.render_template('result.html',image_data=image,shoulder_hip_diff=result_list[0],shoulder_result=result_list[1],face_w=result_list[2],face_h=result_list[3],body_length=result_list[4],body_ratio=result_list[5])
+    return lib_import.render_template(
+        'result.html',
+        image_data=image,
+        points_image=points_image,
+        shoulder_hip_diff=result_list[0],
+        shoulder_result=result_list[1],
+        face_w=result_list[2],
+        face_h=result_list[3],
+        body_length=result_list[4],
+        body_ratio=result_list[5]
+    )
 
 def main():
     app.debug = True

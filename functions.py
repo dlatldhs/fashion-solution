@@ -148,4 +148,7 @@ def ratio_solution( img ):
 
     result_list = [shoulder_hip_diff,shoulder_result,face_w,face_h,body_length,body_ratio]
     
-    return encoded_image,result_list
+    _, buffer = lib_import.cv2.imencode('.jpg', original_img)
+    body_points_image = lib_import.base64.b64encode(buffer).decode('utf-8')
+
+    return encoded_image,body_points_image,result_list
