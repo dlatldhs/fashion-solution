@@ -7,7 +7,7 @@
 			list-style-type: none;
 			max-height: 25px;
 			height: 100%;
-			max-width: 450px;
+			max-width: 600px;
 			width: 100%;
 			 
 			background-color: #616161ae;
@@ -69,17 +69,14 @@
     }
 </style>
 </head>
-
 <body>
-
-<div id="choi">
-<ul >
-<li><a href="/capture">캠으로 찍어서 솔루션받기</a></li>
-
-<li><a href="/file_sumit">사진 넣어서 솔루션받기</a></li>
-</ul>
-</div>
-
+	<div id="choi">
+		<ul >
+			<img src="{{ url_for('video_feed') }}">
+			<li><a href="/capture">캠으로 찍어서 솔루션받기</a></li>
+			<li><a href="/file_sumit">사진 넣어서 솔루션받기</a></li>
+		</ul>
+	</div>
 </body>
 
 

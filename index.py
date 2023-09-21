@@ -13,12 +13,36 @@ lib_import.CORS(
 
 img = 0
 
+
+# 비디오 스트림을 생성하는 함수 정의
+def video_stream():
+    # 무한 반복
+    video = lib_import.cv2.VideoCapture(lib_import.cv2.CAP_DSHOW+1)
+
+    while True:
+        # 비디오 캡처 객체로부터 프레임 읽기
+        ret, frame = video.read()
+        # 프레임이 없으면 반복 종료
+        if not ret:
+            break
+        # 프레임을 JPEG 형식으로 인코딩하고 바이트로 변환
+        ret, buffer = lib_import.cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        # 바이너리 데이터를 multipart 형식으로 반환
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
 @app.route('/')
 def main_page():
     return lib_import.render_template('main.html')
 
+@app.route('/video_feed')
+def video_feed():
+    return lib_import.Response(video_stream(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
 @app.route('/capture')
-def capture_page():
+def capture_page(): 
     
     # 카메라에 접근
     cap = lib_import.cv2.VideoCapture(lib_import.cv2.CAP_DSHOW+1)
