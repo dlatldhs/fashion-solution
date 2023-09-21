@@ -2,12 +2,58 @@
 <html>
 <head>
     <title>Upload Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif; /* 폰트 변경 */
+            background-color: #b7b1b1; /* 배경색 변경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background-color: white; /* 폼 배경색 */
+            padding: 20px; /* 내부 패딩 */
+            border-radius: 5px; /* 모서리 둥글게 */
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px; /* 파일 입력과 제출 버튼 사이의 마진 추가 */
+        }
+
+        input[type="submit"] {
+           background-color:#007BFF ;/* 버튼 색상 변경*/
+           color:white;/*버튼 텍스트 색상 변경*/
+           border:none;/*버튼 테두리 제거*/
+           padding :10px;/*버튼 패딩 추가*/
+           border-radius :5px;/*버튼 모서리 둥글게 만들기*/
+           cursor:pointer;/*마우스 커서를 포인터로 바꾸기*/
+         }
+        
+         a{
+             display:block;/*링크를 block 요소로 만들어 줍니다.*/
+             width:max-content;/*내용에 맞게 너비 조절합니다.*/
+             margin-left :20px;/*위쪽 여백 추가합니다.*/
+             text-align:center ;/*텍스트를 중앙으로 정렬합니다.*/
+             padding :10px ;/*패딩을 추가합니다.*/
+             color:white ;/*텍스트 색상을 하얗게 바꿉니다.*/
+             background-color:#007BFF ;/*배경색을 파랗게 바꿉니다.*/
+             text-decoration:none ;/*밑줄 제거합니다.*/
+         }
+
+
+         
+    </style>
 </head>
 <body>
     <form action="/body_ratio" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" accept="image/*">
         <input type="submit" value="Upload">
     </form>
-    <a href="/capture">사진찍기</a>
+
+     <a href="/capture">사진찍어서하기</a>
+
 </body>
-</html>
+</html> 

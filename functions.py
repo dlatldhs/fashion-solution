@@ -127,8 +127,8 @@ def ratio_solution( img ):
         encoded_image = lib_import.base64.b64encode(buffer).decode('utf-8')
 
         # debuging img
-        lib_import.cv2.imshow("face detecting img", face_detecting_img)
-        lib_import.cv2.imshow("test",original_img)
+        # lib_import.cv2.imshow("face detecting img", face_detecting_img)
+        # lib_import.cv2.imshow("test",original_img)
         lib_import.cv2.waitKey(0)
 
     pose.close()

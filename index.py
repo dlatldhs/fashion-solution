@@ -15,7 +15,7 @@ img = 0
 
 @app.route('/')
 def main_page():
-    return lib_import.render_template('index2.html')
+    return lib_import.render_template('main.html')
 
 @app.route('/capture')
 def capture_page():
@@ -45,9 +45,19 @@ def body_ratio_survey():
     filestr = file.read()
     npimg = lib_import.np.fromstring(filestr, lib_import.np.uint8)
     img = lib_import.cv2.imdecode(npimg, lib_import.cv2.IMREAD_COLOR)
-    image , result_list = functions.ratio_solution(img)
+    image ,points_image, result_list = functions.ratio_solution(img)
 
-    return lib_import.render_template('result.html',image_data=image,shoulder_hip_diff=result_list[0],shoulder_result=result_list[1],face_w=result_list[2],face_h=result_list[3],body_length=result_list[4],body_ratio=result_list[5])
+    return lib_import.render_template(
+        'result.html',
+        image_data=image,
+        points_image=points_image,
+        shoulder_hip_diff=result_list[0],
+        shoulder_result=result_list[1],
+        face_w=result_list[2],
+        face_h=result_list[3],
+        body_length=result_list[4],
+        body_ratio=result_list[5]
+    )
     
 @app.route("/body_ratio2", methods=['POST'] )
 def body_ratio_survey2():
